@@ -28,6 +28,20 @@ add_filter(
                     intval( $arr['mn'] )
                 );
             }
+            // print_r(date( 'Y-m-d H:i'));
+            if ( ! isset( $setting_option_fields['check'] ) ) {
+                $setting_option_fields['check'] = array(
+                    'name'      => 'check',
+                    'label'     => sprintf(
+                        // translators: placeholder: Course.
+                        esc_html_x( '%s\'s Course Access Start Date', 'placeholder: Groups', 'learndash' ),
+                        learndash_get_custom_label( 'group' )
+                    ),
+                    // Check the LD fields ligrary under incldues/settings/settings-fields/
+                    'type'      => 'checkbox-switch',
+                    'options' => array('Add a start date.'),
+                );
+            }
             if ( ! isset( $setting_option_fields['start-date'] ) ) {
                 $setting_option_fields['start-date'] = array(
                     'name'           => 'start-date',
@@ -41,6 +55,7 @@ add_filter(
 					// 	'step' => 1,
 					// 	'min'  => 0,
 					// ),
+					'parent_setting' => 'check',
                 );
             }
         }
@@ -55,10 +70,12 @@ add_action(
     function( $post_id, $post, $update) {
         // All the metabox fields are in sections. Here we are grabbing the post data
         // within the settings key array where the added the custom field.
-        if ( isset( $_POST['learndash-group-access-settings']['start-date'] ) ) {
-            $my_settings_value = $_POST['learndash-group-access-settings']['start-date'];
-            // Then update the post meta
-            update_post_meta( $post_id, 'start_date', $my_settings_value );
+        if(isset($_POST['learndash-group-access-settings']['check'])){
+            if ( isset( $_POST['learndash-group-access-settings']['start-date'] ) ) {
+                $my_settings_value = $_POST['learndash-group-access-settings']['start-date'];
+                // Then update the post meta
+                update_post_meta( $post_id, 'start_date', $my_settings_value );
+            }
         }
         else{
             update_post_meta( $post_id, 'start_date', '' );
@@ -67,5 +84,7 @@ add_action(
     30,
     3
 );
+ 
+// You have to save your own field. This is no longer handled by LD. This is on purpose.
  
 // You have to save your own field. This is no longer handled by LD. This is on purpose.
