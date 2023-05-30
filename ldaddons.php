@@ -98,9 +98,9 @@ add_filter(
                 $user_id = get_current_user_id();
             }
         }
-        // if( is_super_admin( $user_id )){
-        //     return $return;
-        // }
+        if( is_super_admin( $user_id )){
+            return $return;
+        }
         
         $course_id = learndash_get_course_id( $post_id );
         if ( empty( $course_id ) ) {
