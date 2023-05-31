@@ -198,3 +198,19 @@ add_filter(
     },
     10,2
 );
+
+function adding_custom_meta_boxes() {
+    add_meta_box( 
+        'new-meta-box',
+        __( 'New Meta Box' ),
+        'callback_metabox_function',
+        'groups',
+        'advanced',
+        'high'
+    );
+}
+add_action( 'add_meta_boxes', 'adding_custom_meta_boxes', 10, 2 );
+
+function callback_metabox_function(){
+    echo "add your content here";
+}
