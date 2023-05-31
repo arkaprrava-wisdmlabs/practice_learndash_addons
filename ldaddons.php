@@ -141,3 +141,60 @@ add_filter(
 );
  
 // You have to save your own field. This is no longer handled by LD. This is on purpose.
+add_filter(
+    'learndash_payment_button_markup',
+    function($html){
+        if ( empty( $user_id ) ) {
+            if ( ! is_user_logged_in() ) {
+                return $html;
+            }
+            else {
+                $user_id = get_current_user_id();
+            }
+        }
+        // if( is_super_admin( $user_id )){
+        //     return $return;
+        // }
+        
+        $course_id = learndash_get_course_id( get_the_ID(  ) );
+        if ( empty( $course_id ) ) {
+            return $html;
+        }
+        $group_ids = learndash_get_users_group_ids($user_id);
+        if ( empty( $group_ids ) ) {
+            return $html;
+        }
+        foreach($group_ids as $group_id){
+            $course_ids = learndash_get_group_courses_list($group_id);
+            if(!empty($course_ids)){
+                if(in_array($course_id, $course_ids)){
+                    $start_date = get_post_meta($group_id, 'start_date', true);
+                    if(!empty($start_date)){
+                        $today = strtotime(date( 'Y-m-d' ));
+                        $s = sprintf(
+                            '%04d-%02d-%02d',
+                            $start_date['aa'],
+                            $start_date['mm'],
+                            $start_date['jj']
+                        );
+                        $button_text = sprintf(
+                            'Course access will start from %02d-%02d-%04d',
+                            $start_date['jj'],
+                            $start_date['mm'],
+                            $start_date['aa']
+                        );
+                        $upto_date = strtotime($s);
+                        if($today < $upto_date){
+                            return $button_text;
+                        }
+                        else{
+                            return $html;
+                        }
+                    }
+                }
+            }
+        }
+        return $html;
+    },
+    10,2
+);
